@@ -38,26 +38,55 @@ module scale(showOutline=false) {
             linear_extrude(scaleThickness/2)
                 polygon(polyRound(scalePoints, 30));
 
-            shapeY(90);
-            shapeX(700);
+            shapeY(50);
+            shapeX(500);
         }
         translate([52, 68, -33])
             rotate([41, 0, -20])
                 linear_extrude(height=150)
                     circle(38, $fn=500);
+        // bottom outline
+        translate([16, -18, 0])
+            rotate([-90, 0, 2])
+                outline(30);
+        // top outline
+        translate([0, -18, 0])
+            rotate([-90, 180, 2])
+                outline(30);
     }
 }
 
 module shapeX(size) {
-    translate([-5, -60, -(size/2-scaleThickness/2)])
+    translate([-5, -60, -(size/2-scaleThickness/2)+0.05])
         rotate([0, 90, 0])
             linear_extrude(height=55)
                 circle(d=size, $fn=500);
 }
 
 module shapeY(size) {
-    translate([20, 8, -(size/2-scaleThickness/2)+0.75])
-        rotate([79.65, -10, 0])
-            linear_extrude(height=150, scale=0.4)
-                circle(d=size, $fn=500);
+    # union() {
+        translate([13, -22, -size/2+scaleThickness/2-0.91])
+            rotate([82, 20, 0])
+                linear_extrude(height=150, scale=0.4)
+                    circle(d=size, $fn=500);
+        translate([-50, -22, -50])
+            cube([100, 100, 100]);
+    }
+}
+
+module outline(size, length=150) {
+    outlinePoints=[
+        [0, 0, 12],
+        [20, 0, 0],
+        [20, -length, 0],
+        [0, -length, 0]
+    ];
+
+    intersection() {
+        rotate_extrude($fn=100)
+            translate([size/2, 0, 0])
+                polygon(polyRound(outlinePoints, 30));
+        translate([0, -size/2, -length])
+            cube([size, size, length]);
+    }
 }
