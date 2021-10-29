@@ -14,8 +14,8 @@ scalePoints=[
     [23, -10, 40],
     [46, -11, 4],
     [45, -16, 4],
-    [30, -17, 15],
-    [35, -66, 800],
+    [32, -18, 20],
+    [40, -66, 800],
     [30, -230, 35],
     [-8, -66, 800],
     [-2, -23, 10],
@@ -24,7 +24,7 @@ scalePoints=[
 scaleThickness=28;
 scaleRoundness=1;
 
-# blade();
+% blade();
 scale();
 
 module scale(showOutline=false) {
@@ -38,21 +38,17 @@ module scale(showOutline=false) {
             linear_extrude(scaleThickness/2)
                 polygon(polyRound(scalePoints, 30));
 
-            shapeY(50);
-            shapeX(500);
+            // scale causes recursion error right here
+            // hence, use resize instead
+            resize([0, 0, 85.50], auto=[false, false, true])
+                shape(21);
+            shapeX(450);
+            shapeY(57);
         }
-        translate([52, 68, -33])
-            rotate([41, 0, -20])
-                linear_extrude(height=150)
-                    circle(38, $fn=500);
-        // bottom outline
-        translate([16, -18, 0])
-            rotate([-90, 0, 2])
-                outline(30);
-        // top outline
-        translate([0, -18, 0])
-            rotate([-90, 180, 2])
-                outline(30);
+        translate([73, 103, 141])
+            rotate([55, 0, -20])
+                linear_extrude(height=30)
+                    circle(180, $fn=500);
     }
 }
 
@@ -64,29 +60,27 @@ module shapeX(size) {
 }
 
 module shapeY(size) {
-    # union() {
-        translate([13, -22, -size/2+scaleThickness/2-0.91])
-            rotate([82, 20, 0])
-                linear_extrude(height=150, scale=0.4)
-                    circle(d=size, $fn=500);
-        translate([-50, -22, -50])
-            cube([100, 100, 100]);
-    }
+    translate([22, 15, -13])
+        rotate([90, 0, 0])
+            linear_extrude(height=150)
+                circle(d=size, $fn=500);
 }
 
-module outline(size, length=150) {
+module shape(size, length=117) {
     outlinePoints=[
-        [0, 0, 12],
-        [20, 0, 0],
-        [20, -length, 0],
+        [0, 0, 0],
+        [0, length/2, 0],
+        [length/2, length/2, 0],
+        [length/2, 0, 0],
+        [size, 0, 0],
+        [size*3/4, 0, 8],
+        [size, -length/2, length*3/2],
+        [size*2/3, -length, size],
         [0, -length, 0]
     ];
 
-    intersection() {
-        rotate_extrude($fn=100)
-            translate([size/2, 0, 0])
+    translate([16, -17.5, 0])
+        rotate([-90, 0, 2])
+            rotate_extrude($fn=100)
                 polygon(polyRound(outlinePoints, 30));
-        translate([0, -size/2, -length])
-            cube([size, size, length]);
-    }
 }
